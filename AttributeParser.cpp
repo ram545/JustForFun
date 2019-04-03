@@ -1,4 +1,3 @@
-https://www.hackerrank.com/challenges/attribute-parser/problem
 #include<iostream>
 #include<map>
 #include<vector>
@@ -8,17 +7,62 @@ using namespace std;
 
 
 struct HRML{
-	string tag;
+	string elmnt;
 	map<string,string> attrib;
-	map<string,struct HRML> nestTag;
+	map<string,struct HRML*> nestTag;
 };
+
+vector<string> stringParser(string temp){
+	vector<string> tokens;
+	int i,last=0,len=temp.length();
+	for(i=0;i<len;i++){
+		if(temp[i]=='32'){
+			tokens.push_back(temp.substr(last,i-1));
+			last=i+1;
+		}
+		if(i==len-1 && last!=len){
+			tokens.push_back(temp.substr(last,len));
+			break;
+		}
+	}
+	return tokens;
+}
+
+string getTag(string temp){
+	string ret;
+	int i,len=temp.length();
+	for(i=0;i<len;i++)
+		if(temp[i]=='32'){
+			ret=temp.substr(0,i-1);
+			return ret;
+		}
+}
 
 struct HRML* CreateTagMap(vector<string> lst,int N){
 	struct HRML *tagTemp = (struct HRML*)malloc(sizeof(struct HRML));
-	string temp = lst[N];
-	temp = temp.substr(1,temp.length());
-	if(temp[0]!='/'){
-		 
+	string temp,elmnt;
+	vector<string> tokens;
+	while(N<lst.size()){
+		temp = lst[N];
+		if(temp[1]=='/')
+			return tagTemp;
+		else{
+			elmnt = getTag(temp.substr(1,temp.length()-1));
+			if(tagTemp->elmnt.length()<1){
+				tagTemp->elmnt=elmnt;
+				tokens = stringParser(temp.substr(temp.length()-1));
+				vector<string>:: iterator it;
+				for(it=tokens.begin(),it++;it!=tokens.end();){
+					tagTemp->attrib[*(it)]=*(it+2);
+					it+=3;
+				}
+			}
+			else{
+				tagTemp->nestTag[elmnt]=CreateTagMap(lst,N);
+			}
+		}
+		tokens.clear();
+		N++;
 	}
 }
 
@@ -31,14 +75,12 @@ int main(){
 	cin >> testCase >> Query;
 	cin.ignore(250,'\n');
 	while(testCase--){
-		cin >> temp;
 		getline(cin,temp);
 		testCases.push_back(temp);
 	}
 	while(Query--){
-		cin >> temp;
 		getline(cin,temp);
 		queries.push_back(temp);
 	}
-	struct HRML *tag=CreateTagMap(testCases,0);
+	struct HRML *tagLst=CreateTagMap(testCases,0);
 }
