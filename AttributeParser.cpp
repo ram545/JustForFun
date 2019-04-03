@@ -16,12 +16,12 @@ vector<string> stringParser(string temp){
 	vector<string> tokens;
 	int i,last=0,len=temp.length();
 	for(i=0;i<len;i++){
-		if(temp[i]=='32'){
-			tokens.push_back(temp.substr(last,i-1));
+		if(temp[i]==' '){
+			tokens.push_back(temp.substr(last,i-last));
 			last=i+1;
 		}
 		if(i==len-1 && last!=len){
-			tokens.push_back(temp.substr(last,len));
+			tokens.push_back(temp.substr(last,i+1-last));
 			break;
 		}
 	}
@@ -31,30 +31,43 @@ vector<string> stringParser(string temp){
 string getTag(string temp){
 	string ret;
 	int i,len=temp.length();
-	for(i=0;i<len;i++)
-		if(temp[i]=='32'){
-			ret=temp.substr(0,i-1);
+	for(i=0;i<len;i++){
+		if(temp[i]==' '){
+			ret=temp.substr(0,i);
 			return ret;
 		}
+	}
 }
 
-struct HRML* CreateTagMap(vector<string> lst,int N){
+struct HRML* CreateTagMap(vector<string> lst,int& N){
 	struct HRML *tagTemp = (struct HRML*)malloc(sizeof(struct HRML));
-	string temp,elmnt;
+	string temp,elmnt,attr;
+	bool flag=false;
 	vector<string> tokens;
 	while(N<lst.size()){
 		temp = lst[N];
 		if(temp[1]=='/')
 			return tagTemp;
 		else{
-			elmnt = getTag(temp.substr(1,temp.length()-1));
+			elmnt = getTag(temp.substr(1,temp.length()-2));
 			if(tagTemp->elmnt.length()<1){
 				tagTemp->elmnt=elmnt;
-				tokens = stringParser(temp.substr(temp.length()-1));
+				tokens = stringParser(temp.substr(1,temp.length()-2));
 				vector<string>:: iterator it;
-				for(it=tokens.begin(),it++;it!=tokens.end();){
-					tagTemp->attrib[*(it)]=*(it+2);
-					it+=3;
+				it = tokens.begin();
+				tokens.erase(it);
+				for(it=tokens.begin();it!=tokens.end();it++){
+					temp = *it;
+					if(temp[0]!='='){
+						if(!flag){
+							attr = temp;
+							flag = true;
+						}
+						else{
+							tagTemp->attrib.insert({attr,temp});
+							flag = false;
+						}
+					}
 				}
 			}
 			else{
@@ -82,5 +95,6 @@ int main(){
 		getline(cin,temp);
 		queries.push_back(temp);
 	}
-	struct HRML *tagLst=CreateTagMap(testCases,0);
+	int N=0;
+	struct HRML *tagLst=CreateTagMap(testCases,N);
 }
