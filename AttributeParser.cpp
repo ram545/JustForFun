@@ -9,7 +9,7 @@ using namespace std;
 struct HRML{
 	string elmnt;
 	map<string,string> attrib;
-	map<string,struct HRML*> nestTag;
+	map<string,HRML*> nestTag;
 };
 
 vector<string> stringParser(string temp){
@@ -39,8 +39,8 @@ string getTag(string temp){
 	}
 }
 
-struct HRML* CreateTagMap(vector<string> lst,int& N){
-	struct HRML *tagTemp = (struct HRML*)malloc(sizeof(struct HRML));
+HRML* CreateTagMap(vector<string> lst,int& N){
+	HRML *tagTemp = new HRML;
 	string temp,elmnt,attr;
 	bool flag=false;
 	vector<string> tokens;
@@ -96,5 +96,5 @@ int main(){
 		queries.push_back(temp);
 	}
 	int N=0;
-	struct HRML *tagLst=CreateTagMap(testCases,N);
+	HRML *tagLst=CreateTagMap(testCases,N);
 }
