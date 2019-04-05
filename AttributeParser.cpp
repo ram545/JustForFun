@@ -46,8 +46,11 @@ HRML* CreateTagMap(vector<string> lst,int& N){
 	vector<string> tokens;
 	while(N<lst.size()){
 		temp = lst[N];
-		if(temp[1]=='/')
+		cout << N << " " << temp << endl;
+		if(temp[1]=='/'){
+			N++;
 			return tagTemp;
+		}
 		else{
 			elmnt = getTag(temp.substr(1,temp.length()-2));
 			if(tagTemp->elmnt.length()<1){
@@ -69,13 +72,13 @@ HRML* CreateTagMap(vector<string> lst,int& N){
 						}
 					}
 				}
+				N++;
 			}
 			else{
 				tagTemp->nestTag[elmnt]=CreateTagMap(lst,N);
 			}
 		}
 		tokens.clear();
-		N++;
 	}
 }
 
@@ -97,4 +100,5 @@ int main(){
 	}
 	int N=0;
 	HRML *tagLst=CreateTagMap(testCases,N);
+	cout << N << endl;
 }
