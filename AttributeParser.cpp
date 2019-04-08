@@ -43,6 +43,22 @@ string getTag(string temp){
 		return ret;
 }
 
+string getQuery(string query){
+	string ret;
+	int i;
+	for(i=0;i<query.length();i++){
+		if(query[i]=='.' || query[i]=='~'){
+			ret = query.substr(0,i);
+			break;
+		}
+		if(i==query.length()-1){
+			ret = query;
+			break;
+		}
+	}
+	return ret;
+}
+
 HRML* CreateTagMap(vector<string> lst,int& N){
 	HRML *tagTemp = new HRML;
 	string temp,elmnt,attr;
@@ -82,37 +98,50 @@ HRML* CreateTagMap(vector<string> lst,int& N){
 		tokens.clear();
 		N++;
 	}
+	return tagTemp;
 }
 
-void solve(map<string,HRML*> tags,string query){
+string solve(HRML* tags,string query){
 	int i;
 	string temp;
 	bool flag;
+	if(query[0]=='.')
+		flag = true;
+	else if(query[0]=='~')
+		flag = false;
+	else
+		return "Not Found!";
+	query = query.substr(1);
 	for(i=0;i<query.length();i++){
 		if(query[i]=='.' || query[i]=='~'){
 			temp = query.substr(0,i);
-			flag=true;
 			break;
 		}
 		if(i==query.length()-1){
 			temp = query;
-			flag = false;
 			break;
 		}
 	}
 	if(flag){
-		cout << "tag: " << temp << endl;
- 		solve(tags,query.substr(i+1));
+		//cout << "tag: " << temp << endl;
+		if(tags->nestTag.count(temp)==1)
+			return solve(tags->nestTag[temp],query.substr(i));
+		else	
+			return "Not Found!";
 	}
 	else{
-		cout << "value: " << temp << endl;
+		//cout << "value: " << temp << endl;
+		if(tags->attrib.count(temp)==1)
+			return tags->attrib[temp];
+		else
+			return "Not Found!";
 	}
 }
 
 
 int main(){
 	int testCase,Query,N=0;
-	string temp;	
+	string temp,temp1;	
 	vector<string> testCases;
 	vector<string> queries;
 	map<string,HRML*> tags;
@@ -126,17 +155,72 @@ int main(){
 		getline(cin,temp);
 		queries.push_back(temp);
 	}
-	map<string,string>::iterator it;
 	while(N<testCases.size()){
 		temp = getTag(testCases[N]);
+		cout << temp.length() << endl;
 		temp = temp.substr(1,temp.length()-1);
+		cout << temp << endl;
 		HRML *tagLst=CreateTagMap(testCases,N);
 		tags[temp]=tagLst;
 		N++;
 	}
 	N=0;
 	while(N<queries.size()){
-		solve(tags,queries[N]);
+		temp = getQuery(queries[N]);
+		if(tags.count(temp)>0)
+			cout << solve(tags[temp],queries[N].substr(temp.length())) << endl;
+		else
+			cout << "Not Found!" << endl;
 		N++;
 	}
 }
+
+
+/*
+6 4
+<a>
+<b name = "tag_one">
+<c name = "tag_two" value = "val_907">
+</c>
+</b>
+</a>
+a.b~name
+a.b.c~value
+a.b.c~src
+a.b.c.d~name
+*/
+
+/*
+16 14
+<tag1 v1 = "123" v2 = "43.4" v3 = "hello">
+</tag1>
+<tag2 v4 = "v2" name = "Tag2">
+<tag3 v1 = "Hello" v2 = "World!">
+</tag3>
+<tag4 v1 = "Hello" v2 = "Universe!">
+</tag4>
+</tag2>
+<tag5>
+<tag7 new_val = "New">
+</tag7>
+</tag5>
+<tag6>
+<tag8 intval = "34" floatval = "9.845">
+</tag8>
+</tag6>
+tag1~v1
+tag1~v2
+tag1~v3
+tag4~v2
+tag2.tag4~v1
+tag2.tag4~v2
+tag2.tag3~v2
+tag5.tag7~new_val
+tag5~new_val
+tag7~new_val
+tag6.tag8~intval
+tag6.tag8~floatval
+tag6.tag8~val
+tag8~intval
+*/
+
