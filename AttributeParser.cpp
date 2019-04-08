@@ -38,7 +38,7 @@ string getTag(string temp){
 		}
 	}
 	if(i==len)
-		return temp.substr(0,temp.length()-1);
+		return temp;
 	else
 		return ret;
 }
@@ -157,10 +157,7 @@ int main(){
 		queries.push_back(temp);
 	}
 	while(N<testCases.size()){
-		temp = getTag(testCases[N]);
-		cout << temp << endl;
-		temp = temp.substr(1,temp.length()-1);
-		cout << temp << endl;
+		temp = getTag(testCases[N].substr(1,testCases[N].length()-2));
 		HRML *tagLst=CreateTagMap(testCases,N);
 		tags[temp]=tagLst;
 		N++;
@@ -175,93 +172,3 @@ int main(){
 		N++;
 	}
 }
-
-/*20 19
-<tag1 v1 = "123" v2 = "43.4" v3 = "hello">
-</tag1>
-<tag2 v4 = "v2" name = "Tag2">
-<tag3 v1 = "Hello" v2 = "World!">
-</tag3>
-<tag4 v1 = "Hello" v2 = "Universe!">
-</tag4>
-</tag2>
-<tag5>
-<tag7 new_val = "New">
-</tag7>
-</tag5>
-<tag6>
-<tag8 intval = "34" floatval = "9.845">
-<ntag nv = "4$">
-<nvtag nv = "6$">
-</nvtag>
-</ntag>
-</tag8>
-</tag6>
-tag1~v1
-tag1~v2
-tag1~v3
-tag4~v2
-tag2.tag4~v1
-tag2.tag4~v2
-tag2.tag3~v2
-tag5.tag7~new_val
-tag5~new_val
-tag7~new_val
-tag6.tag8~intval
-tag6.tag8~floatval
-tag6.tag8~val
-tag8~intval
-tag6.tag8.ntag~nv
-tag6.tag8.ntag.nvtag~nv
-tag6.tag8.nvtag~nv
-randomtag~nv
-tag283.tag21.den~jef
-*/
-
-/*
-6 4
-<a>
-<b name = "tag_one">
-<c name = "tag_two" value = "val_907">
-</c>
-</b>
-</a>
-a.b~name
-a.b.c~value
-a.b.c~src
-a.b.c.d~name
-*/
-
-/*
-16 14
-<tag1 v1 = "123" v2 = "43.4" v3 = "hello">
-</tag1>
-<tag2 v4 = "v2" name = "Tag2">
-<tag3 v1 = "Hello" v2 = "World!">
-</tag3>
-<tag4 v1 = "Hello" v2 = "Universe!">
-</tag4>
-</tag2>
-<tag5>
-<tag7 new_val = "New">
-</tag7>
-</tag5>
-<tag6>
-<tag8 intval = "34" floatval = "9.845">
-</tag8>
-</tag6>
-tag1~v1
-tag1~v2
-tag1~v3
-tag4~v2
-tag2.tag4~v1
-tag2.tag4~v2
-tag2.tag3~v2
-tag5.tag7~new_val
-tag5~new_val
-tag7~new_val
-tag6.tag8~intval
-tag6.tag8~floatval
-tag6.tag8~val
-tag8~intval
-*/
